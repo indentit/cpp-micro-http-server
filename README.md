@@ -40,5 +40,14 @@ git submodule add git@github.com:indentit/cpp-micro-http-server.git third_party/
 ```
 
 ## Dependencies and building
-As dependency there's the [stand-alone non=boost library](https://think-async.com/Asio/asio-1.24.0/doc/) which is used for the TCP socket communication layer.
+As dependency there's the [stand-alone non-boost library](https://think-async.com/Asio/asio-1.24.0/doc/) which is used for the TCP socket communication layer.
 This a header based library with good documentation.
+
+To build the test example do the following.
+```shell
+cd test
+mkdir build
+cd build
+cmake ..
+make
+```
