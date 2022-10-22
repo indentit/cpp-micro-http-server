@@ -16,13 +16,12 @@ Server::~Server(){}
 
 void Server::start(Router& router)
 {
-	// create a server passive socket (acceptor) to listen for
-	// incomming connection requests.
+    // create a server passive socket (acceptor) to listen for
+    // incomming connection requests.
     asio::io_context io_context;
-	Acceptor acceptor(io_context, port_, router, backlog_size_);
+    Acceptor acceptor(io_context, port_, router, backlog_size_);
 
-
-	acceptor.start();
+    acceptor.start();
 
 	// run asio context processing loop
 	io_context.run();
