@@ -9,6 +9,7 @@ class Response {
 
 	public:
 		Response(asio::ip::tcp::socket* sock);
+		~Response();
 		
 		/*! Send response to client with empty body of text/plain
 		 *
@@ -24,7 +25,10 @@ class Response {
 	private:
 		asio::ip::tcp::socket* sock_;
 
-		std::size_t write(const char* buffer, std::size_t num_chars);
+		void write(const char* buffer, std::size_t num_chars);
+		std::size_t write_sync(const char* buffer, std::size_t num_chars);
+
+		void finish();
 };
 
 

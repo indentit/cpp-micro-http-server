@@ -1,5 +1,8 @@
 #include "response.h"
 #include "header.h"
+#include <asio.hpp>
+#include <asio/buffer.hpp>
+#include <asio/write.hpp>
 #include <bits/c++config.h>
 #include <string>
 #include <iostream>
@@ -10,9 +13,28 @@ Response::Response(asio::ip::tcp::socket* sock)
     sock_ = sock;
 }
 
+Response::~Response()
+{
+	delete sock_;
+}
+
+void Response::finish()
+{
+	delete this;
+}
+
+void Response::write(const char* buf, std::size_t num_chars)
+{
+	asio::async_write(*sock_,
+			asio::buffer(buf, num_chars),
+			[this](const asio::error_code& error, std::size_t bytes_transferred) {
+				finish();
+			}
+		);
+}
 
 
-std::size_t Response::write(const char* buf, std::size_t num_chars)
+std::size_t Response::write_sync(const char* buf, std::size_t num_chars)
 {
     std::size_t total_bytes_written = 0;
 	// Run the loop until all data is written

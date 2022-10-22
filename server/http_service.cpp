@@ -25,9 +25,6 @@ HttpService::HttpService(asio::ip::tcp::socket* sock)
 
 HttpService::~HttpService()
 {
-	delete sock_;
-	delete req_;
-	delete res_;
 }
 
 void HttpService::finish()
@@ -50,6 +47,7 @@ void HttpService::handle_request(Router& router)
 				
 				/* Route request */
 				router.route_request(req_, res_);
+				finish();
 
 			} catch (std::exception& e) {
 				// log error
@@ -57,11 +55,12 @@ void HttpService::handle_request(Router& router)
 				// send response back to client
 				Response res(sock_);
 				res.send(400);	
+				delete req_;
+				delete res_;
+				delete sock_;
 				finish();
 			}
 
-			// cleanup 
-			finish();
 		});
 }
 
