@@ -23,12 +23,11 @@ void Server::start(Router& router)
 
     acceptor.start();
 
-	// run asio context processing loop
-	io_context.run();
+    // run asio context processing loop
+    io_context.run();
 
-	// infinite loop
-	while(true){}
-
+    // infinite loop
+    while(true){}
 }
 
 
