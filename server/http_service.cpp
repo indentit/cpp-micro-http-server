@@ -33,11 +33,11 @@ void HttpService::finish()
 }
 
 
-void HttpService::handle_request(Router& router)
+void HttpService::handle_request()
 {
     // Start the process by reading http header from request.
 	// The call back will deal with the rest of the flow.
-	asio::async_read_until(*sock_, request_buf_, "\r\n\r\n", [this, &router](const asio::error_code& error, std::size_t bytes_transfered) {
+	asio::async_read_until(*sock_, request_buf_, "\r\n\r\n", [this](const asio::error_code& error, std::size_t bytes_transfered) {
 			// parse the request header
 			std::istream input(&request_buf_);
 			try {
@@ -46,6 +46,7 @@ void HttpService::handle_request(Router& router)
 				parse_request(bytes_transfered, input);
 				
 				/* Route request */
+				Router router;
 				router.route_request(req_, res_);
 				finish();
 

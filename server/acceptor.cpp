@@ -34,7 +34,7 @@ void Acceptor::on_accept(const asio::error_code& ec,
 {
     if (!ec) {
 		// service the request
-        (new HttpService(sock))->handle_request(router_);
+        (new HttpService(sock))->handle_request();
     } else {
         std::cout << "Error occured! Error code = "
             << ec.value() << ". Message: " << ec.message() << std::endl;

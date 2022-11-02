@@ -25,7 +25,7 @@ class HttpService {
 		 * Reads the header, parses it and reads the body if exists.
 		 *
 		 */
-		void handle_request(Router& router);
+		void handle_request();
 	   
 		/*! Get the IP of the client who sent the request.
 		 *

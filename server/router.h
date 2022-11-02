@@ -9,21 +9,18 @@
 #include "response.h"
 #include "request.h"
 
-class Router {
-	struct Route {
-		std::string url_regex;
-		std::string request_method;
-		void (*callback)(Request*, Response*);
-	};
+struct Route {
+	std::string url_regex;
+	std::string request_method;
+	void (*callback)(Request*, Response*);
+};
 
-	std::vector<Route> routes;
+class Router {
+
+	static std::vector<Route> routes;
 
 	public:
-		/*! Adds a route to the router
-		 *
-		 * \param url_regex String regex of the url path.
-		 * \param request_method "GET", "POST", "PUT".
-		 */
+		
 		void register_route(std::string url_regex, 
 				std::string request_method, 
 				void (*callback)(Request*, Response*) );

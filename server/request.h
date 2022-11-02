@@ -23,11 +23,10 @@ class Request {
 	
 		Header header;
 
-		/*! Get a vector with the request path components
-		 *
-		 */
 		std::vector<std::string> path_components();	
-				
+		
+		std::string get_body();
+
 	private:
 		
 };

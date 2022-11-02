@@ -19,7 +19,7 @@ namespace tcp_server {
              *
              * The routing map with the mapping of the routes with the handler functions 
              */
-            void start(Router& router);
+            void start();
     };
 
 }

@@ -10,7 +10,6 @@ class Acceptor {
 	asio::ip::tcp::acceptor acceptor_;
 	unsigned int backlog_size_;
 	bool is_stopped_;
-	Router& router_;
 
 
 	public:
@@ -21,7 +20,7 @@ class Acceptor {
 		 * \param port_num Port number to wich the passive socket
 		 * will be listenning for connection requests
 		 */
-		Acceptor(asio::io_context& ios, unsigned short port_num, Router& router) :
+		Acceptor(asio::io_context& ios, unsigned short port_num) :
 			io_context_(ios), // initiates the context
 			acceptor_(
 				io_context_,
@@ -30,8 +29,7 @@ class Acceptor {
 					port_num
 					)
 				), // creates the passive socket (aka, acceptor)
-			is_stopped_(false),
-			router_ {router}
+			is_stopped_(false)
 			{}
 
 		/*! Creates a passive endpoint to listen to incomming
@@ -41,7 +39,7 @@ class Acceptor {
 		 * \param port_num Port number to wich the passive socket
 		 * will be listenning for connection requests
 		 */
-		Acceptor(asio::io_context& ios, unsigned short port_num, Router& router, unsigned int backlog_size) :
+		Acceptor(asio::io_context& ios, unsigned short port_num, unsigned int backlog_size) :
 			io_context_(ios), // initiates the context
 			acceptor_(
 				io_context_,
@@ -51,8 +49,7 @@ class Acceptor {
 					)
 				), // creates the passive socket (aka, acceptor)
 			backlog_size_(backlog_size),
-			is_stopped_(false),
-			router_ {router}
+			is_stopped_(false)
 			{}
 
 		/*! Start accepting incoming connection requests

@@ -18,6 +18,9 @@ Request::Request(asio::ip::tcp::socket* sock)
 }
 
 
+/*! Get a vector with the request path components
+ *
+ */
 std::vector<std::string> Request::path_components()
 {
 	// Get subcomponents of the request path
@@ -45,3 +48,12 @@ std::vector<std::string> Request::path_components()
 
 	return out;
 }
+
+
+
+std::string Request::get_body()
+{
+	return body;
+}
+
+

@@ -1,7 +1,17 @@
 #include "router.h"
 #include <iostream>
 #include <regex>
+#include <vector>
 
+// Initialization of static class properties
+std::vector<Route> Router::routes;
+
+
+/*! Adds a route to the router
+ *
+ * \param url_regex String regex of the url path.
+ * \param request_method "GET", "POST", "PUT".
+ */
 void Router::register_route(std::string url_regex, 
 		std::string request_method, 
 		void (*callback)(Request*, Response*) )

@@ -14,12 +14,12 @@ Server::Server(const unsigned short port, const int backlog_size)
 
 Server::~Server(){}
 
-void Server::start(Router& router)
+void Server::start()
 {
     // create a server passive socket (acceptor) to listen for
     // incomming connection requests.
     asio::io_context io_context;
-    Acceptor acceptor(io_context, port_, router, backlog_size_);
+    Acceptor acceptor(io_context, port_, backlog_size_);
 
     acceptor.start();
 
