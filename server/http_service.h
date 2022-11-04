@@ -11,10 +11,11 @@
 
 
 class HttpService {
-	asio::ip::tcp::socket* sock_;
+	asio::ip::tcp::socket* sock_ = nullptr;
 	asio::streambuf request_buf_;
-	Request* req_;
-	Response* res_;
+	Request* req_ = nullptr;
+	Response* res_ = nullptr;
+	char *body_buffer = nullptr;
 	
 	public:
 		HttpService(asio::ip::tcp::socket* sock);

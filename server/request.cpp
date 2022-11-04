@@ -53,7 +53,11 @@ std::vector<std::string> Request::path_components()
 
 std::string Request::get_body()
 {
-	return body;
+	return body_;
 }
 
 
+void Request::set_body(const char *body)
+{
+	body_ = body;	
+}

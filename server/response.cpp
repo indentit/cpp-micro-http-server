@@ -15,7 +15,8 @@ Response::Response(asio::ip::tcp::socket* sock)
 
 Response::~Response()
 {
-	delete sock_;
+	//if (sock_ != nullptr)
+	//	delete sock_;
 }
 
 void Response::finish()

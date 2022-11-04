@@ -3,10 +3,16 @@
 #include "request.h"
 #include "response.h"
 #include "router.h"
+#include <asio/buffer.hpp>
+#include <asio/completion_condition.hpp>
 #include <asio/error_code.hpp>
+#include <asio/read.hpp>
 #include <bits/c++config.h>
+#include <cstring>
 #include <exception>
+#include <ios>
 #include <iostream>
+#include <istream>
 #include <ostream>
 #include <regex>
 #include <sstream>
@@ -25,6 +31,18 @@ HttpService::HttpService(asio::ip::tcp::socket* sock)
 
 HttpService::~HttpService()
 {
+	if (body_buffer != nullptr) {
+		delete [] body_buffer;
+	}
+	if (req_ != nullptr) {
+		delete req_;
+	}
+	if (res_ != nullptr) {
+		delete res_;
+	}
+	if (sock_) {
+		delete sock_;
+	}
 }
 
 void HttpService::finish()
@@ -37,38 +55,49 @@ void HttpService::handle_request()
 {
     // Start the process by reading http header from request.
 	// The call back will deal with the rest of the flow.
-	asio::async_read_until(*sock_, request_buf_, "\r\n\r\n", [this](const asio::error_code& error, std::size_t bytes_transfered) {
-			// parse the request header
-			std::istream input(&request_buf_);
-			try {
-				
-				/* Parse request */
-				parse_request(bytes_transfered, input);
-				
-				/* Route request */
-				Router router;
-				router.route_request(req_, res_);
-				finish();
+	asio::async_read_until(*sock_, request_buf_, 
+			"\r\n\r\n", 
+			[this](const asio::error_code& error, std::size_t bytes_transfered) {
+				req_->bytes_read += bytes_transfered;	
+				// parse the request header
+				std::istream input(&request_buf_);
+				try {
+					
+					/* Parse request */
+					parse_request(bytes_transfered, input);
+					
 
-			} catch (std::exception& e) {
-				// log error
-				std::cout << "Error: " << e.what() << std::endl;
-				// send response back to client
-				Response res(sock_);
-				res.send(400);	
-				delete req_;
-				delete res_;
-				delete sock_;
-				finish();
-			}
+				} catch (std::exception& e) {
+					// log error
+					std::cout << "Error: " << e.what() << std::endl;
+					// send response back to client
+					Response res(sock_);
+					res.send(400);	
+					//delete req_;
+					//delete res_;
+					//delete sock_;
+					finish();
+				}
 
 		});
 }
 
 void HttpService::parse_request(std::size_t n, std::istream& input)
 {
+
+	//debug
+	//input.seekg(0, input.beg);
+	//std::cout << "tellg=" << input.tellg() << "\n";
+	//input.seekg(0, input.end);
+	/*
+	int length = input.tellg();
+	input.seekg(0, input.beg);
+	std::cout << length << " END OF REQUEST\n";
+	*/
+
+
     int count = 0;
-    
+   
     // request method
     char line[300];
 
@@ -105,14 +134,13 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 
 	// Go through the remaing header lines and extract the
 	// header fields.
-	while (count < (n - 2)) {
+	while (count < (n - 1)) {
 		input.getline(line, 300, '\r');
 		count += input.gcount();
 		input.get(); // remove \n from input stream buffer
 		count++;
-
-		// Check the header field and set it in this object.
 		tmp = line;
+		// Check the header field and set it in this object.
 		std::size_t pos = tmp.find(':');
 		if (pos != std::string::npos) {
 			std::string field_name;
@@ -128,9 +156,38 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 				req_->header.content_lenght = std::stoi(field_value); // convert string to int	
 			}
 		}
-
-		// get body if Content-Length > 0
 	} 
+
+	
+	std::string tmp_str;
+	input >> tmp_str;
+	body_buffer = new char[req_->header.content_lenght];
+	std::strcpy(body_buffer, tmp_str.c_str());
+
+	// get body if Content-Length > 0
+	if (req_->header.content_lenght > 0) {
+
+		sock_->async_read_some(
+				asio::buffer(body_buffer + tmp_str.length(),
+				req_->header.content_lenght - tmp_str.length()),
+				[this](const asio::error_code& error, std::size_t bytes_transfered) {
+	
+					body_buffer[req_->header.content_lenght] = 0;
+					req_->set_body(body_buffer);
+					/* Route request */
+					Router router;
+					router.route_request(req_, res_);
+					finish();
+
+				});
+	} else {
+		/* Route request */
+		Router router;
+		router.route_request(req_, res_);
+		finish();
+
+	}
+		
 		
 }
 

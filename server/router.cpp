@@ -37,7 +37,8 @@ void Router::route_request(Request* req, Response* res)
 				&& (req->header.request_method.compare(r.request_method) == 0)) {
 			// call callback
 			r.callback(req, res);
-			delete req;
+			//delete req;
+			//req = nullptr;
 			// exit for loop
 			return;
 		}
@@ -46,6 +47,7 @@ void Router::route_request(Request* req, Response* res)
 	// If no route was found we respond error 404
 	res->send(404);
 	delete req;
+	req = nullptr;
 }
 
 
