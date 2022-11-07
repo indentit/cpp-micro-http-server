@@ -23,6 +23,8 @@ concepts behind this server and also how the code works.
 ### The routing component
 [Router overview article](https://indentit.com/posts/webapps/cpp-http-router/)
 
+The documentation is work-in-progress and new resources will be linked here soon.
+
 
 ## How to use it
 The idea is for you to integrate the source code directly into you project.
