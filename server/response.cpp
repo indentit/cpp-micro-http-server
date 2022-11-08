@@ -21,7 +21,6 @@ Response::~Response()
 
 void Response::finish()
 {
-	delete this;
 }
 
 void Response::write(const char* buf, std::size_t num_chars)
