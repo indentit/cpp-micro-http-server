@@ -46,8 +46,6 @@ void Router::route_request(Request* req, Response* res)
 	
 	// If no route was found we respond error 404
 	res->send(404);
-	delete req;
-	req = nullptr;
 }
 
 
