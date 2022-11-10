@@ -152,8 +152,10 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 			field_value = tmp.substr(pos + 1);
 			string_trim(field_value);
 
-			if (field_name.compare("Content-Length") == 0) {
+			if (field_name.compare("Content-Length") == 0 || field_name.compare("content-length") == 0) {
 				req_->header.content_lenght = std::stoi(field_value); // convert string to int	
+			} else if (field_name.compare("Cookie") == 0 || field_name.compare("cookie") == 0) {
+				req_->header.cookie = field_value;
 			}
 		}
 	} 
