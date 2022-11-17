@@ -50,7 +50,9 @@ std::vector<std::string> Request::path_components()
 }
 
 
-
+/*!
+ * \return String with the request body.
+ */
 std::string Request::get_body()
 {
 	return body_;
@@ -61,3 +63,15 @@ void Request::set_body(const char *body)
 {
 	body_ = body;	
 }
+
+
+std::string Request::remote_ip()
+{
+    // get remote IP of the requesting client
+    asio::ip::tcp::endpoint remote_endpoint = l_sock->remote_endpoint();
+    asio::ip::address remote_address = remote_endpoint.address();
+    std::string ips = remote_address.to_string();
+    
+    return ips;
+}
+

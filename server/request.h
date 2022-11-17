@@ -25,12 +25,19 @@ class Request {
 		Header header;
 
 		std::vector<std::string> path_components();	
-		
+	
+		/*! Get the request body in string format. */
 		std::string get_body();
 
 		void set_body(const char * body);
 		
 		size_t bytes_read = 0;
+
+		/*! Get the IP of the client that made the request.
+		 *
+		 * \return String with the IP.
+		 */
+		std::string remote_ip();
 
 	private:
 		

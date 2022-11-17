@@ -23,6 +23,29 @@ void Response::finish()
 {
 }
 
+
+std::string Response::response_header()
+{
+	std::string buffer = "HTTP/1.1 ";
+	buffer += header.http_status_table.at(header.status_code);
+
+	// content type
+	buffer += "\r\nContent-Type: ";
+	buffer += header.content_type;
+	
+	// content length
+	buffer += "\r\nContent-Length: ";
+	buffer += std::to_string(header.content_lenght);
+
+	// cookie
+	if (!header.cookie.empty())
+		buffer += "\r\nCookie: " + header.cookie;
+
+	buffer += "\r\n\r\n";
+	return buffer;
+}
+
+
 void Response::write(const char* buf, std::size_t num_chars)
 {
 	asio::async_write(*sock_,
@@ -49,18 +72,19 @@ std::size_t Response::write_sync(const char* buf, std::size_t num_chars)
 }
 
 
+void Response::send()
+{
+	std::string buf = response_header().c_str();
+
+	write(buf.c_str(), buf.length());	
+}
+
+
 
 void Response::send(unsigned int status_code)
 {
-	Header header;
-
-	// Step 2. Allocating and filling the buffer.
-    std::string buf = "HTTP/1.1 ";
-    buf += header.http_status_table.at(status_code);
-    buf += "\r\nContent-Type: text/plain\r\n";
-	buf.append("Content-Length: 0");
-	buf.append("\r\n");
-	buf.append("\r\n");
+	header.status_code = status_code;
+	std::string buf = response_header().c_str();
 
 	write(buf.c_str(), buf.length());	
 }
@@ -68,39 +92,23 @@ void Response::send(unsigned int status_code)
 
 void Response::send(unsigned int status_code, std::string& body)
 {
-	Header header;
-
-	// Step 2. Allocating and filling the buffer.
-    std::string buf = "HTTP/1.1 ";
-    buf += header.http_status_table.at(status_code);
-    buf += "\r\nContent-Type: text/plain\r\n";
-	buf += "Content-Length: ";
-	buf += std::to_string(body.length());
-	buf += "\r\n\r\n";
-
+	header.status_code = status_code;
+	std::string buf = response_header().c_str();
 	buf += body;
 
 	write(buf.c_str(), buf.length());	
 }
 
 
-void Response::send_json(const std::string json)
+void Response::send_json(const std::string &json)
 {
-	Header header;
+	std::cout << "DEBUG send_json" << "\n";		
+	header.content_type = "application/json";
+	header.content_lenght = json.length();
 
-	// headers
-    std::string buf = "HTTP/1.1 ";
-    buf += header.http_status_table.at(200);
-    buf += "\r\nContent-Type: application/json\r\n";
-	buf += "Content-Length: ";
-	buf += std::to_string(json.length());
-	buf += "\r\n";
-	buf += "\r\n";
-
-	// body
+	std::string buf = response_header().c_str();
 	buf += json;
 
-	// write to socket
 	write(buf.c_str(), buf.length());	
 }
 
