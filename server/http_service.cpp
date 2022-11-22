@@ -156,6 +156,8 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 				req_->header.content_lenght = std::stoi(field_value); // convert string to int	
 			} else if (field_name.compare("Cookie") == 0 || field_name.compare("cookie") == 0) {
 				req_->header.cookie = field_value;
+			} else if(field_name.compare("Content-Type") == 0 || field_name.compare("content-type") == 0) {
+				req_->header.content_type = field_value;
 			}
 		}
 	} 
