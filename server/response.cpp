@@ -102,7 +102,6 @@ void Response::send(unsigned int status_code, std::string& body)
 
 void Response::send_json(const std::string &json)
 {
-	std::cout << "DEBUG send_json" << "\n";		
 	header.content_type = "application/json";
 	header.content_lenght = json.length();
 
