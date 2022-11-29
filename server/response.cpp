@@ -93,9 +93,9 @@ void Response::send(unsigned int status_code)
 void Response::send(unsigned int status_code, std::string& body)
 {
 	header.status_code = status_code;
+	header.content_lenght = body.length();
 	std::string buf = response_header().c_str();
 	buf += body;
-
 	write(buf.c_str(), buf.length());	
 }
 
