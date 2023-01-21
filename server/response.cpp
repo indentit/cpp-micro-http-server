@@ -39,7 +39,7 @@ std::string Response::response_header()
 
 	// cookie
 	if (!header.cookie.empty())
-		buffer += "\r\nCookie: " + header.cookie;
+		buffer += "\r\nSet-Cookie: " + header.cookie;
 
 	buffer += "\r\n\r\n";
 	return buffer;
