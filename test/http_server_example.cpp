@@ -1,5 +1,5 @@
-#include "../server/server.h"
-#include "../server/router.h"
+#include "server.h"
+#include "router.h"
 #include <iostream>
 #include <string>
 
@@ -20,10 +20,10 @@ int main() {
 
 	// Routing
 	Router router;
-	router.register_route("^/product/([[:alnum:]]+)$", "POST", handle);
+	//load_routes(router);
 
     tcp_server::Server server(port_num, BACKLOG_SIZE);
-    server.start(router);
+    server.start();
     
     return 0; 
 }
