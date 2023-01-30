@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(micro_http_server LANGUAGES CXX)
 
+# create the library target
 add_library(${PROJECT_NAME} 
 	server/server.cpp
 	server/router.cpp
