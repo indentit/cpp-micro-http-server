@@ -16,6 +16,7 @@ class HttpService {
 	Request* req_ = nullptr;
 	Response* res_ = nullptr;
 	char *body_buffer = nullptr;
+	int body_bytes_count = 0;
 	
 	public:
 		HttpService(asio::ip::tcp::socket* sock);
@@ -54,6 +55,8 @@ class HttpService {
 		void string_trim(std::string&);
 
 		void finish();
+
+		void receive_more();
 };
 
 

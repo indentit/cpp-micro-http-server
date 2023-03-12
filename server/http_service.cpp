@@ -13,6 +13,7 @@
 #include <ios>
 #include <iostream>
 #include <istream>
+#include <iterator>
 #include <ostream>
 #include <regex>
 #include <sstream>
@@ -84,16 +85,19 @@ void HttpService::handle_request()
 
 void HttpService::parse_request(std::size_t n, std::istream& input)
 {
-
-	//debug
-	//input.seekg(0, input.beg);
-	//std::cout << "tellg=" << input.tellg() << "\n";
-	//input.seekg(0, input.end);
 	/*
+	//debug
+	input.seekg(0, input.beg);
+	std::cout << "tellg=" << input.tellg() << "\n";
+	input.seekg(0, input.end);
+	
 	int length = input.tellg();
 	input.seekg(0, input.beg);
 	std::cout << length << " END OF REQUEST\n";
 	*/
+
+	//std::string s(std::istreambuf_iterator<char>(input), {});
+	//std::cout << s << "\n";
 
 
     int count = 0;
@@ -162,28 +166,21 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 		}
 	} 
 
-	
-	std::string tmp_str;
-	input >> tmp_str;
+	// Get remaining data in input stream
+	std::string s(std::istreambuf_iterator<char>(input), {});
+	//std::cout << s << "\n";
+	//std::cout << s.length() << "\n";
 	body_buffer = new char[req_->header.content_lenght];
-	std::strcpy(body_buffer, tmp_str.c_str());
-
-	// get body if Content-Length > 0
-	if (req_->header.content_lenght > 0) {
-
-		sock_->async_read_some(
-				asio::buffer(body_buffer + tmp_str.length(),
-				req_->header.content_lenght - tmp_str.length()),
-				[this](const asio::error_code& error, std::size_t bytes_transfered) {
+	std::strcpy(body_buffer, s.c_str());
+	body_bytes_count = s.length();
 	
-					body_buffer[req_->header.content_lenght] = 0;
-					req_->set_body(body_buffer);
-					/* Route request */
-					Router router;
-					router.route_request(req_, res_);
-					finish();
+	
+	// If there is still incomming data then must read_some until all data is received
+	
 
-				});
+	if ((req_->header.content_lenght - s.length()) > 0 ) {
+		receive_more();
+		
 	} else {
 		/* Route request */
 		Router router;
@@ -194,6 +191,34 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 		
 		
 }
+
+
+void HttpService::receive_more()
+{
+				
+	// ensure that no buffer overflow occurs
+	if (req_->header.content_lenght - body_bytes_count > 0) {
+		
+		sock_->async_read_some(
+			asio::buffer(body_buffer + body_bytes_count,
+			req_->header.content_lenght - body_bytes_count),
+			[this](const asio::error_code& error, std::size_t bytes_transfered) {
+				
+				body_bytes_count += bytes_transfered;
+
+				if (body_bytes_count >= req_->header.content_lenght) {
+					req_->set_body(body_buffer);
+					/* Route request */
+					Router router;
+					router.route_request(req_, res_);
+					finish();
+					} else {
+						receive_more();
+					}
+			});
+	}
+}
+
 
 
 std::string HttpService::get_remote_ip()
