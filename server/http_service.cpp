@@ -182,6 +182,8 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 		receive_more();
 		
 	} else {
+		req_->set_body(body_buffer);
+		//std::cout << "DEBUG body:" << req_->get_body() << "\n";
 		/* Route request */
 		Router router;
 		router.route_request(req_, res_);
