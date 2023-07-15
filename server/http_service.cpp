@@ -162,6 +162,8 @@ void HttpService::parse_request(std::size_t n, std::istream& input)
 				req_->header.cookie = field_value;
 			} else if(field_name.compare("Content-Type") == 0 || field_name.compare("content-type") == 0) {
 				req_->header.content_type = field_value;
+			} else if(field_name.compare("Authorization") == 0 || field_name.compare("authorization") == 0) {
+				req_->header.authorization = field_value;
 			}
 		}
 	} 

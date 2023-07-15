@@ -13,6 +13,7 @@ struct Header {
 	std::string cookie;
 	unsigned int status_code = 200;
 	std::string content_type = "text/plain";
+	std::string authorization;
 };
 
 
