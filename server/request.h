@@ -18,6 +18,8 @@ class Request {
 
 	std::string body_;
 
+	std::string bearer_token_;
+
 
 	public:
 		Request(asio::ip::tcp::socket* sock);
@@ -39,7 +41,16 @@ class Request {
 		 */
 		std::string remote_ip();
 
+		/** Gets the jwt string from the Authorization header.
+		 *
+		 * On Error:
+		 * Return an empty string;
+		 */
+		const char* bearer_token();
+
 	private:
+
+		void string_trim(std::string& str);
 		
 };
 

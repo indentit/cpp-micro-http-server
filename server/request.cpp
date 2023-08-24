@@ -75,3 +75,32 @@ std::string Request::remote_ip()
     return ips;
 }
 
+		
+const char* Request::bearer_token()
+{
+	// extract the from the Authorization header
+	if (!header.authorization.empty()) {
+		int pos = header.authorization.find("Bearer");
+		if (pos == std::string::npos) {
+			pos = header.authorization.find("bearer");
+		}
+		if(pos != std::string::npos) {
+			bearer_token_ = header.authorization.substr(pos + 6);
+			string_trim(bearer_token_);
+		}
+	}
+
+	return bearer_token_.c_str();
+}
+
+
+void Request::string_trim(std::string& str)
+{
+	std::size_t pos = str.find_first_not_of(' ');
+	str = str.substr(pos);
+	pos = str.find_last_not_of(' ');
+	str = str.substr(0, pos + 1);
+}
+
+
+
